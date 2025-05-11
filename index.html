@@ -1,44 +1,206 @@
-o<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <title>Controle RGB</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Controle RGB</title>
+
+  <!-- Importa Materialize CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+  <!-- Ícones -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: 'Roboto', sans-serif;
+      padding: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+      background-color: #1e1e1e;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+    .project-name {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    .logo-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .slider-container {
+      margin: 20px 0;
+    }
+    .slider {
+      width: 100%;
+    }
+    .color-picker-container {
+      margin: 20px 0;
+    }
+    .btn-large {
+      padding: 15px 25px;
+      font-size: 16px;
+    }
+    .status-box {
+      margin-top: 20px;
+    }
+
+    .button-container {
+      margin: 20px 0;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 5px;
+      background: #888;
+      outline: none;
+      transition: background 0.3s;
+    }
+
+    input[type="range"]:focus {
+      background: #555;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ff4081;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      background: #f50057;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 8px;
+      border-radius: 5px;
+      background: #333;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ff4081;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    input[type="range"]::-moz-range-thumb:hover {
+      background: #f50057;
+    }
+
+    input[type="range"]::-moz-range-track {
+      height: 8px;
+      border-radius: 5px;
+      background: #333;
+    }
+  </style>
 </head>
 <body>
-    <h1>Controle de LED RGB</h1>
 
-    <label>R:
-        <input type="range" id="r" min="0" max="255" value="0">
-    </label>
-    <br>
-    <label>G:
-        <input type="range" id="g" min="0" max="255" value="0">
-    </label>
-    <br>
-    <label>B:
-        <input type="range" id="b" min="0" max="255" value="0">
-    </label>
-    <br>
-    <button onclick="atualizar()">Enviar</button>
+  <div class="container">
+    <div class="logo-container">
+      <img src="images/logo-embarcaTech.png" alt="Logo EmbarcaTech" width="120"/>
+      <h4 class="project-name">Projeto IoT</h4>
+    </div>
 
-    <p id="status">Armengo</p>
-<script>
+    <!-- Controles de LED -->
+    <div class="slider-container">
+      <label for="r">Vermelho (R):</label>
+      <input type="range" id="r" min="0" max="255" value="0" class="slider" onchange="atualizar()"/>
+      <br/>
+      <label for="g">Verde (G):</label>
+      <input type="range" id="g" min="0" max="255" value="0" class="slider" onchange="atualizar()"/>
+      <br/>
+      <label for="b">Azul (B):</label>
+      <input type="range" id="b" min="0" max="255" value="0" class="slider" onchange="atualizar()"/>
+    </div>
+
+    <!-- Seletor de Cor -->
+    <div class="color-picker-container">
+      <label for="color-picker">Escolha a Cor:</label>
+      <input type="color" id="color-picker" value="#000000" onchange="atualizarColor()"/>
+    </div>
+
+    <!-- Botões de Cores Pré-definidas -->
+    <div class="button-container">
+      <button class="btn-large red" onclick="setColor(255, 0, 0)">Vermelho</button>
+      <button class="btn-large green" onclick="setColor(0, 255, 0)">Verde</button>
+      <button class="btn-large blue" onclick="setColor(0, 0, 255)">Azul</button>
+      <button class="btn-large yellow" onclick="setColor(255, 255, 0)">Amarelo</button>
+      <button class="btn-large purple" onclick="setColor(128, 0, 128)">Roxo</button>
+      <button class="btn-large white" onclick="setColor(255, 255, 255)">Branco</button>
+      <button class="btn-large grey" onclick="setColor(128, 128, 128)">Cinza</button>
+    </div>
+
+    <!-- Botão de Desligar -->
+    <button class="btn-large grey" onclick="setColor(0, 0, 0)">Desligar</button>
+
+    <div class="status-box">
+      <p id="status" class="grey-text">Status: Aguardando envio...</p>
+    </div>
+  </div>
+
+  <!-- Materialize JS + jQuery -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+  <script>
     const ip = "http://10.0.0.124";
 
+    // Função para enviar a cor RGB
     async function sendRGB(r, g, b) {
-        const url = `${ip}/?r=${r}&g=${g}&b=${b}`;
-         window.location.replace(url);
-
+      const url = `${ip}/?r=${r}&g=${g}&b=${b}`;
+      document.getElementById("status").innerText = `Status: Enviando para ${url}`;
+      // Redireciona diretamente, bypassando CORS
+      window.location.replace(url);
     }
 
+    // Função para atualizar a cor quando uma barra de rolagem é ajustada
     function atualizar() {
-        const r = document.getElementById("r").value;
-        const g = document.getElementById("g").value;
-        const b = document.getElementById("b").value;
-        sendRGB(r, g, b);
+      const r = document.getElementById("r").value;
+      const g = document.getElementById("g").value;
+      const b = document.getElementById("b").value;
+      sendRGB(r, g, b);
     }
-</script>
+
+    // Função para atualizar a cor do seletor de cor
+    function atualizarColor() {
+      const color = document.getElementById("color-picker").value;
+      const hex = color.replace('#', '');
+      const r = parseInt(hex.substr(0, 2), 16);
+      const g = parseInt(hex.substr(2, 2), 16);
+      const b = parseInt(hex.substr(4, 2), 16);
+      sendRGB(r, g, b);
+    }
+
+    // Função para configurar uma cor pré-definida
+    function setColor(r, g, b) {
+      document.getElementById("r").value = r;
+      document.getElementById("g").value = g;
+      document.getElementById("b").value = b;
+      sendRGB(r, g, b);
+    }
+  </script>
 
 </body>
 </html>
-
