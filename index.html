@@ -9,18 +9,33 @@
   <label>G: <input type="range" id="g" min="0" max="255" value="0"></label><br>
   <label>B: <input type="range" id="b" min="0" max="255" value="0"></label><br>
   <button onclick="sendRGB()">Enviar</button>
+<form onsubmit="event.preventDefault(); enviarRGB();">
+  R: <input type="range" min="0" max="255" id="r" oninput="outputR.value=value">
+  <output id="outputR">0</output><br>
 
-  <script>
-    function sendRGB() {
-      const r = document.getElementById('r').value;
-      const g = document.getElementById('g').value;
-      const b = document.getElementById('b').value;
-      const ip = 'http://10.0.0.124'; // ⬅️ Substitua pelo IP real do Pico W
+  G: <input type="range" min="0" max="255" id="g" oninput="outputG.value=value">
+  <output id="outputG">0</output><br>
 
-      fetch(`${ip}/?r=${r}&g=${g}&b=${b}`)
-        .then(res => console.log("Enviado"))
-        .catch(err => alert("Erro ao enviar comando"));
-    }
-  </script>
+  B: <input type="range" min="0" max="255" id="b" oninput="outputB.value=value">
+  <output id="outputB">0</output><br>
+
+  <button type="submit">Atualizar</button>
+</form>
+
+<script>
+function enviarRGB() {
+  const r = document.getElementById("r").value;
+  const g = document.getElementById("g").value;
+  const b = document.getElementById("b").value;
+
+  const ip = "http://10.0.0.124"; // Substitua com o IP real do Pico
+
+  fetch(`${ip}/?r=${r}&g=${g}&b=${b}`)
+    .then(response => response.text())
+    .then(data => console.log("Resposta:", data))
+    .catch(err => console.error("Erro ao enviar:", err));
+}
+</script>
+
 </body>
 </html>
