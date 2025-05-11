@@ -1,41 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt">
 <head>
-  <title>Controle RGB Remoto</title>
+    <meta charset="UTF-8">
+    <title>Controle RGB</title>
 </head>
 <body>
-  <h1>RGB Remote Control</h1>
-  <label>R: <input type="range" id="r" min="0" max="255" value="0"></label><br>
-  <label>G: <input type="range" id="g" min="0" max="255" value="0"></label><br>
-  <label>B: <input type="range" id="b" min="0" max="255" value="0"></label><br>
-  <button onclick="sendRGB()">Enviar</button>
-<form onsubmit="event.preventDefault(); enviarRGB();">
-  R: <input type="range" min="0" max="255" id="r" oninput="outputR.value=value">
-  <output id="outputR">0</output><br>
+    <h1>Controle de LED RGB</h1>
 
-  G: <input type="range" min="0" max="255" id="g" oninput="outputG.value=value">
-  <output id="outputG">0</output><br>
+    <label>R:
+        <input type="range" id="r" min="0" max="255" value="0">
+    </label>
+    <br>
+    <label>G:
+        <input type="range" id="g" min="0" max="255" value="0">
+    </label>
+    <br>
+    <label>B:
+        <input type="range" id="b" min="0" max="255" value="0">
+    </label>
+    <br>
+    <button onclick="enviarRGB()">Enviar</button>
 
-  B: <input type="range" min="0" max="255" id="b" oninput="outputB.value=value">
-  <output id="outputB">0</output><br>
+    <p id="status">Status: Aguardando envio...</p>
 
-  <button type="submit">Atualizar</button>
-</form>
+    <script>
+        const ip = "http://10.0.0.124";
 
-<script>
-function enviarRGB() {
-  const r = document.getElementById("r").value;
-  const g = document.getElementById("g").value;
-  const b = document.getElementById("b").value;
+        function enviarRGB() {
+            const r = document.getElementById("r").value;
+            const g = document.getElementById("g").value;
+            const b = document.getElementById("b").value;
 
-  const ip = "http://10.0.0.124"; // Substitua com o IP real do Pico
+            const url = `${ip}/rgb?r=${r}&g=${g}&b=${b}`;
 
-  fetch(`${ip}/?r=${r}&g=${g}&b=${b}`)
-    .then(response => response.text())
-    .then(data => console.log("Resposta:", data))
-    .catch(err => console.error("Erro ao enviar:", err));
-}
-</script>
-
+            fetch(url)
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById("status").innerText = "Status: Comando enviado com sucesso!";
+                    } else {
+                        document.getElementById("status").innerText = "Status: Erro ao enviar comando.";
+                    }
+                })
+                .catch(error => {
+                    document.getElementById("status").innerText = "Status: Erro ao enviar comando.";
+                    console.error("Erro:", error);
+                });
+        }
+    </script>
 </body>
 </html>
