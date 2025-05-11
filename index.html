@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Controle RGB Remoto</title>
+</head>
+<body>
+  <h1>RGB Remote Control</h1>
+  <label>R: <input type="range" id="r" min="0" max="255" value="0"></label><br>
+  <label>G: <input type="range" id="g" min="0" max="255" value="0"></label><br>
+  <label>B: <input type="range" id="b" min="0" max="255" value="0"></label><br>
+  <button onclick="sendRGB()">Enviar</button>
+
+  <script>
+    function sendRGB() {
+      const r = document.getElementById('r').value;
+      const g = document.getElementById('g').value;
+      const b = document.getElementById('b').value;
+      const ip = 'http://10.0.0.124'; // ⬅️ Substitua pelo IP real do Pico W
+
+      fetch(`${ip}/?r=${r}&g=${g}&b=${b}`)
+        .then(res => console.log("Enviado"))
+        .catch(err => alert("Erro ao enviar comando"));
+    }
+  </script>
+</body>
+</html>
