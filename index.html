@@ -22,32 +22,35 @@
     <button onclick="enviarRGB()">Enviar</button>
 
     <p id="status">Status: Aguardando envio...</p>
+<script>
+    const ip = "http://10.0.0.124";
 
-    <script>
-        const ip = "http://10.0.0.124";
-
-        function enviarRGB() {
-            const r = document.getElementById("r").value;
-            const g = document.getElementById("g").value;
-            const b = document.getElementById("b").value;
-
-            const url = `${ip}/?r=${r}&g=${g}&b=${b}`;
-
-
-            fetch(url)
-                .then(response => {
-                    if (response.ok) {
-                        document.getElementById("status").innerText = "Status: Comando enviado com sucesso!";
-                    } else {
-                        document.getElementById("status").innerText = "Status: Erro ao enviar comando.";
-                    }
-                })
-                .catch(error => {
-                    document.getElementById("status").innerText = "Status: Erro ao enviar comando.";
-                    console.error("Erro:", error);
-                });
+    async function sendRGB(r, g, b) {
+        const url = `${ip}/?r=${r}&g=${g}&b=${b}`;
+        console.log("Enviando para:", url);
+        try {
+            const response = await fetch(url);
+            const text = await response.text();
+            console.log("Resposta:", text);
+            if (response.ok) {
+                document.getElementById("status").innerText = "Status: Comando enviado com sucesso.";
+            } else {
+                document.getElementById("status").innerText = `Status: Erro ${response.status}`;
+            }
+        } catch (error) {
+            console.error("Erro no fetch:", error);
+            document.getElementById("status").innerText = "Status: Erro ao enviar comando: " + error;
         }
-    </script>
+    }
+
+    function atualizar() {
+        const r = document.getElementById("r").value;
+        const g = document.getElementById("g").value;
+        const b = document.getElementById("b").value;
+        sendRGB(r, g, b);
+    }
+</script>
+
 </body>
 </html>
 
