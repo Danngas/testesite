@@ -27,22 +27,8 @@
 
     async function sendRGB(r, g, b) {
         const url = `${ip}/?r=${r}&g=${g}&b=${b}`;
-        window.location.replace(url);
+       // window.location.replace(url);
 
-      //  console.log("Enviando para:", url);
-        try {
-            const response = await fetch(url);
-            const text = await response.text();
-            console.log("Resposta:", text);
-            if (response.ok) {
-                document.getElementById("status").innerText = "Status: Comando enviado com sucesso.";
-            } else {
-                document.getElementById("status").innerText = `Status: Erro ${response.status}`;
-            }
-        } catch (error) {
-            console.error("Erro no fetch:", error);
-            document.getElementById("status").innerText = "Status: Erro ao enviar comando: " + error;
-        }
     }
 
     function atualizar() {
