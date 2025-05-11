@@ -27,7 +27,9 @@
 
     async function sendRGB(r, g, b) {
         const url = `${ip}/?r=${r}&g=${g}&b=${b}`;
-        console.log("Enviando para:", url);
+        window.location.replace(url);
+
+      //  console.log("Enviando para:", url);
         try {
             const response = await fetch(url);
             const text = await response.text();
