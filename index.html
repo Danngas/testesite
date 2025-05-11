@@ -1,110 +1,53 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Controle RGB Pico W</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Status da Pico W</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-    input[type="range"] { width: 300px; }
-    .color-box {
-      margin: 20px auto;
-      width: 150px; height: 150px;
-      border-radius: 10px;
-      border: 2px solid #444;
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background-color: #f4f4f4;
     }
-    .sliders { margin: 10px 0; }
-    #codigo-status {
-      margin-top: 20px;
-      font-weight: bold;
-      color: green;
+    #status {
+      background: white;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+      margin-top: 1rem;
+      font-size: 1.2rem;
     }
   </style>
 </head>
 <body>
-  <h1>Controle de LED RGB - Raspberry Pi Pico W</h1>
+  <h1>Consulta de Status da Pico W</h1>
 
-  <div class="sliders">
-    <label>R: <span id="valR">0</span></label><br>
-    <input type="range" id="r" min="0" max="255" value="0">
-  </div>
-  <div class="sliders">
-    <label>G: <span id="valG">0</span></label><br>
-    <input type="range" id="g" min="0" max="255" value="0">
-  </div>
-  <div class="sliders">
-    <label>B: <span id="valB">0</span></label><br>
-    <input type="range" id="b" min="0" max="255" value="0">
-  </div>
+  <label for="ip">IP da Pico W:</label>
+  <input type="text" id="ip" value="192.168.15.15" />
+  <button onclick="consultarStatus()">Consultar</button>
 
-  <button onclick="enviarRGB()">Enviar</button>
-
-  <div class="color-box" id="corAtual"></div>
-
-  <div id="codigo-status">Código não recebido ainda.</div>
+  <div id="status">Aguardando consulta...</div>
 
   <script>
-    const rInput = document.getElementById("r");
-    const gInput = document.getElementById("g");
-    const bInput = document.getElementById("b");
-    const statusDiv = document.getElementById("codigo-status");
+    async function consultarStatus() {
+      const ip = document.getElementById('ip').value;
+      const statusDiv = document.getElementById('status');
+      statusDiv.textContent = 'Consultando...';
 
-    function atualizarCorBox() {
-      const r = rInput.value;
-      const g = gInput.value;
-      const b = bInput.value;
-      document.getElementById("valR").innerText = r;
-      document.getElementById("valG").innerText = g;
-      document.getElementById("valB").innerText = b;
-      document.getElementById("corAtual").style.backgroundColor = `rgb(${r},${g},${b})`;
+      try {
+        const response = await fetch(`http://${ip}/status`);
+        if (!response.ok) throw new Error("Falha na resposta");
+
+        const dados = await response.json();
+        statusDiv.innerHTML = `
+          <strong>Status:</strong> ${dados.status}<br>
+          <strong>Temperatura:</strong> ${dados.temperatura} °C
+        `;
+      } catch (e) {
+        statusDiv.textContent = 'Erro ao consultar a Pico W: ' + e.message;
+      }
     }
-
-    function enviarRGB() {
-      const r = rInput.value;
-      const g = gInput.value;
-      const b = bInput.value;
-      const ip = "http://10.0.0.124";
-      const url = `${ip}/?r=${r}&g=${g}&b=${b}`;
-      fetch(url)
-        .then(response => response.text())
-        .then(data => {
-          console.log("Resposta do servidor:", data);
-          obterStatus(); // Atualiza o status após enviar
-        })
-        .catch(err => console.error("Erro ao enviar dados:", err));
-    }
-
-    function obterStatus() {
-      fetch("/status")
-        .then(response => response.json())
-        .then(data => {
-          rInput.value = data.r;
-          gInput.value = data.g;
-          bInput.value = data.b;
-          atualizarCorBox();
-
-          if (data.codigo === "123456788") {
-            statusDiv.innerText = "✅ Código recebido: 123456788";
-            statusDiv.style.color = "green";
-          } else {
-            statusDiv.innerText = "❌ Código inválido";
-            statusDiv.style.color = "red";
-          }
-        })
-        .catch(err => {
-          console.error("Erro ao obter status:", err);
-          statusDiv.innerText = "❌ Erro ao conectar com a placa";
-          statusDiv.style.color = "red";
-        });
-    }
-
-    rInput.addEventListener("input", atualizarCorBox);
-    gInput.addEventListener("input", atualizarCorBox);
-    bInput.addEventListener("input", atualizarCorBox);
-
-    window.onload = () => {
-      obterStatus();
-      atualizarCorBox();
-    };
   </script>
 </body>
 </html>
