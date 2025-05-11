@@ -31,7 +31,8 @@
             const g = document.getElementById("g").value;
             const b = document.getElementById("b").value;
 
-            const url = `${ip}/rgb?r=${r}&g=${g}&b=${b}`;
+            const url = `${ip}/?r=${r}&g=${g}&b=${b}`;
+
 
             fetch(url)
                 .then(response => {
