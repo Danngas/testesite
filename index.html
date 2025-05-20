@@ -1,48 +1,80 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Controle de LED - Pico W</title>
+    <meta charset="UTF-8">
+    <title>Painel Casa Inteligente</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; background-color: #f4f7f6; }
-        h1 { color: #4CAF50; }
-        button { background-color: #4CAF50; color: white; padding: 10px 20px; margin: 10px; border-radius: 5px; font-size: 16px; cursor: pointer; }
-        #status { font-size: 18px; }
+        body { font-family: Arial; text-align: center; margin: 10px; background-color: #b5e5fb; }
+        h1 { font-size: 40px; }
+        select, button { font-size: 32px; margin: 5px; padding: 5px; }
+        .status { font-size: 32px; margin: 5px; }
     </style>
 </head>
 <body>
-    <h1>Controle de LED - Pico W</h1>
-    <p>LED Azul: <span id="status">Desligado</span></p>
-    <button onclick="enviarComando(true)">Ligar LED</button>
-    <button onclick="enviarComando(false)">Desligar LED</button>
+    <h1>Painel Casa Inteligente</h1>
+    <div>
+        <label for="comodo">Selecione o Cômodo:</label>
+        <select id="comodo">
+            <option value="QUARTO_1">Quarto 1</option>
+            <option value="QUARTO_2">Quarto 2</option>
+            <option value="COZINHA">Cozinha</option>
+            <option value="BANHEIRO">Banheiro</option>
+        </select>
+        <button onclick="selecionarComodo()">Selecionar</button>
+    </div>
+    <div>
+        <button onclick="ligarLed()">Ligar LED</button>
+        <button onclick="desligarLed()">Desligar LED</button>
+    </div>
+    <div>
+        <label for="cor">Selecione a Cor:</label>
+        <select id="cor">
+            <option value="VERMELHO">Vermelho</option>
+            <option value="VERDE">Verde</option>
+            <option value="AZUL">Azul</option>
+            <option value="AMARELO">Amarelo</option>
+            <option value="CIANO">Ciano</option>
+            <option value="LILAS">Lilás</option>
+        </select>
+        <button onclick="mudarCor()">Mudar Cor</button>
+    </div>
+    <div>
+        <button onclick="desligarEmergencia()">Desligar Emergência</button>
+    </div>
+    <div class="status">
+        <p>Cômodo: <span id="comodo-atual">QUARTO 1</span></p>
+        <p>LED: <span id="led-status">DESLIGADO</span></p>
+        <p>Cor: <span id="cor-atual">VERMELHO</span></p>
+        <p>Temperatura: <span id="temperatura">25.00°C</span></p>
+        <p>Emergência: <span id="emergencia">DESLIGADA</span></p>
+    </div>
     <script>
-        async function enviarComando(estado) {
-            try {
-                console.log(`Comando enviado: ${estado} (${Date.now()} ms)`);
-                await fetch('https://enormous-chestnut-spirit.glitch.me/api/led', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ blue: estado })
-                });
-                atualizarStatus();
-            } catch (e) {
-                console.error('Erro:', e);
-                document.getElementById('status').innerText = 'Erro ao enviar';
-            }
+        function selecionarComodo() {
+            const comodo = document.getElementById('comodo').value;
+            alert("Cômodo selecionado: " + comodo);
+            document.getElementById('comodo-atual').innerText = comodo;
         }
 
-        async function atualizarStatus() {
-            try {
-                const response = await fetch('https://enormous-chestnut-spirit.glitch.me/api/led');
-                const data = await response.json();
-                document.getElementById('status').innerText = data.blue ? 'Ligado' : 'Desligado';
-            } catch (e) {
-                console.error('Erro:', e);
-                document.getElementById('status').innerText = 'Erro ao carregar';
-            }
+        function ligarLed() {
+            alert("LED ligado!");
+            document.getElementById('led-status').innerText = 'LIGADO';
         }
 
-        setInterval(atualizarStatus, 3000); // 3 segundos
-        atualizarStatus(); // Chamar ao carregar a página
+        function desligarLed() {
+            alert("LED desligado!");
+            document.getElementById('led-status').innerText = 'DESLIGADO';
+        }
+
+        function mudarCor() {
+            const cor = document.getElementById('cor').value;
+            alert("Cor alterada para: " + cor);
+            document.getElementById('cor-atual').innerText = cor;
+        }
+
+        function desligarEmergencia() {
+            alert("Emergência desligada!");
+            document.getElementById('emergencia').innerText = 'DESLIGADA';
+        }
     </script>
 </body>
 </html>
