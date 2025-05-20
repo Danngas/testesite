@@ -42,39 +42,101 @@
         <button onclick="desligarEmergencia()">Desligar Emergência</button>
     </div>
     <div class="status">
-        <p>Cômodo: <span id="comodo-atual">QUARTO 1</span></p>
+        <p>Cômodo: <span id="comodo-atual">QUARTO_1</span></p>
         <p>LED: <span id="led-status">DESLIGADO</span></p>
         <p>Cor: <span id="cor-atual">VERMELHO</span></p>
         <p>Temperatura: <span id="temperatura">25.00°C</span></p>
         <p>Emergência: <span id="emergencia">DESLIGADA</span></p>
     </div>
     <script>
-        function selecionarComodo() {
+        const BACKEND_URL = 'https://enormous-chestnut-spirit.glitch.me/';
+
+        // Atualiza o estado na interface
+        async function atualizarEstado() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/comando`);
+                const estado = await response.json();
+                document.getElementById('comodo-atual').innerText = estado.comodo;
+                document.getElementById('led-status').innerText = estado.led;
+                document.getElementById('cor-atual').innerText = estado.cor;
+                document.getElementById('temperatura').innerText = `${estado.temperatura.toFixed(2)}°C`;
+                document.getElementById('emergencia').innerText = estado.emergencia;
+            } catch (error) {
+                console.error('Erro ao atualizar estado:', error);
+            }
+        }
+
+        async function selecionarComodo() {
             const comodo = document.getElementById('comodo').value;
-            alert("Cômodo selecionado: " + comodo);
-            document.getElementById('comodo-atual').innerText = comodo;
+            try {
+                await fetch(`${BACKEND_URL}/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ comodo })
+                });
+                atualizarEstado();
+            } catch (error) {
+                console.error('Erro ao selecionar cômodo:', error);
+            }
         }
 
-        function ligarLed() {
-            alert("LED ligado!");
-            document.getElementById('led-status').innerText = 'LIGADO';
+        async function ligarLed() {
+            try {
+                await fetch(`${BACKEND_URL}/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ led: 'LIGADO' })
+                });
+                atualizarEstado();
+            } catch (error) {
+                console.error('Erro ao ligar LED:', error);
+            }
         }
 
-        function desligarLed() {
-            alert("LED desligado!");
-            document.getElementById('led-status').innerText = 'DESLIGADO';
+        async function desligarLed() {
+            try {
+                await fetch(`${BACKEND_URL}/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ led: 'DESLIGADO' })
+                });
+                atualizarEstado();
+            } catch (error) {
+                console.error('Erro ao desligar LED:', error);
+            }
         }
 
-        function mudarCor() {
+        async function mudarCor() {
             const cor = document.getElementById('cor').value;
-            alert("Cor alterada para: " + cor);
-            document.getElementById('cor-atual').innerText = cor;
+            try {
+                await fetch(`${BACKEND_URL}/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cor })
+                });
+                atualizarEstado();
+            } catch (error) {
+                console.error('Erro ao mudar cor:', error);
+            }
         }
 
-        function desligarEmergencia() {
-            alert("Emergência desligada!");
-            document.getElementById('emergencia').innerText = 'DESLIGADA';
+        async function desligarEmergencia() {
+            try {
+                await fetch(`${BACKEND_URL}/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ emergencia: 'DESLIGADA' })
+                });
+                atualizarEstado();
+            } catch (error) {
+                console.error('Erro ao desligar emergência:', error);
+            }
         }
+
+        // Atualiza estado ao carregar a página
+        atualizarEstado();
+        // Atualiza estado a cada 10 segundos
+        setInterval(atualizarEstado, 10000);
     </script>
 </body>
 </html>
